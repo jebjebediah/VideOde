@@ -1,10 +1,10 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using VideOde.Core;
 
 namespace VideOde.Data;
 public class VideOdeContext : DbContext
 {
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-    {
-        optionsBuilder.UseSqlite($"Data Source={Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData)}\\VideOde\\VideOde.db");
-    }
+    public VideOdeContext(DbContextOptions<VideOdeContext> options) : base (options) { }
+
+    public DbSet<Clip> Clips { get; set; }
 }

@@ -4,10 +4,7 @@ using VideOde.Core;
 namespace VideOde.Data;
 public class VideOdeContext : DbContext
 {
-    public DbSet<Clip> Clips { get; set; }
+    public VideOdeContext(DbContextOptions<VideOdeContext> options) : base (options) { }
 
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-    {
-        optionsBuilder.UseSqlite($"Data Source={Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData)}\\VideOde\\VideOde.db");
-    }
+    public DbSet<Clip> Clips { get; set; }
 }

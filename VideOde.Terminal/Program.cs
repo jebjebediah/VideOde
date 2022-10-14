@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using VideOde.Core;
 using VideOde.Data.Providers;
+using VideOde.Terminal;
 
 class Program
 {
@@ -10,13 +11,36 @@ class Program
 
         var clipService = services.GetRequiredService<IClipService>();
 
-        clipService.AddClip(new Clip
-        {
-            Title = "Initial clip",
-            Length = 0
-        });
+        IEnumerable<Clip> clips = clipService.GetAllClips();
 
-        Console.WriteLine(clipService.GetClipCount());
+        string defaultTableValue = string.Empty;
+
+        List<IEnumerable<string>> cols = new()
+        {
+            clips.Select(clip => clip.Title),
+            clips.Select(clip => clip ?.Description ?? defaultTableValue),
+            clips.Select(clip => clip.StartDate?.ToString() ?? defaultTableValue),
+            clips.Select(clip => clip.EndDate?.ToString() ?? defaultTableValue),
+            clips.Select(clip => clip.Length.ToString())
+        };
+
+        IEnumerable<string> headings = new List<string>()
+        {
+            nameof(Clip.Title),
+            nameof(Clip.Description),
+            nameof(Clip.StartDate),
+            nameof(Clip.EndDate),
+            nameof(Clip.Length)
+        };
+
+        var table = new TabularData(cols, headings);
+
+        IEnumerable<string> printableRows = table.GetPrintableRows();
+
+        foreach (string row in printableRows)
+        {
+            Console.WriteLine(row);
+        }
     }
 
     public static ServiceProvider ConfigureServices()

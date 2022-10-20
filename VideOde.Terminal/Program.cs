@@ -1,5 +1,4 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using VideOde.Core;
 using VideOde.Data.Providers;
 using VideOde.Terminal;
 
@@ -9,37 +8,28 @@ class Program
     {
         var services = ConfigureServices();
 
-        var clipService = services.GetRequiredService<IClipService>();
-
-        IEnumerable<Clip> clips = clipService.GetAllClips();
-
-        string defaultTableValue = string.Empty;
-
-        List<IEnumerable<string>> cols = new()
+        while (true)
         {
-            clips.Select(clip => clip.Title),
-            clips.Select(clip => clip ?.Description ?? defaultTableValue),
-            clips.Select(clip => clip.StartDate?.ToString() ?? defaultTableValue),
-            clips.Select(clip => clip.EndDate?.ToString() ?? defaultTableValue),
-            clips.Select(clip => clip.Length.ToString())
-        };
+            Console.Write("Enter command: ");
+            string input = Console.ReadLine() ?? "";
+            List<string> inputList = input.Split(' ').ToList();
 
-        IEnumerable<string> headings = new List<string>()
-        {
-            nameof(Clip.Title),
-            nameof(Clip.Description),
-            nameof(Clip.StartDate),
-            nameof(Clip.EndDate),
-            nameof(Clip.Length)
-        };
+            string? area = inputList.ElementAtOrDefault(0);
+            string? verb = inputList.ElementAtOrDefault(1);
+            string? arg1 = inputList.ElementAtOrDefault(2);
 
-        var table = new TabularData(cols, headings);
-
-        IEnumerable<string> printableRows = table.GetPrintableRows();
-
-        foreach (string row in printableRows)
-        {
-            Console.WriteLine(row);
+            if (area == "clips")
+            {
+                ClipsArea.Handle(services.GetRequiredService<IClipService>(), verb, arg1);
+            }
+            else if (area == "exit")
+            {
+                return;
+            }
+            else
+            {
+                Console.WriteLine("Input not recognized!");
+            }
         }
     }
 

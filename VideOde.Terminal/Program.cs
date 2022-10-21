@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using VideOde.Core;
 using VideOde.Data.Providers;
+using VideOde.Terminal;
 
 class Program
 {
@@ -8,15 +8,29 @@ class Program
     {
         var services = ConfigureServices();
 
-        var clipService = services.GetRequiredService<IClipService>();
-
-        clipService.AddClip(new Clip
+        while (true)
         {
-            Title = "Initial clip",
-            Length = 0
-        });
+            Console.Write("Enter command: ");
+            string input = Console.ReadLine() ?? "";
+            List<string> inputList = input.Split(' ').ToList();
 
-        Console.WriteLine(clipService.GetClipCount());
+            string? area = inputList.ElementAtOrDefault(0);
+            string? verb = inputList.ElementAtOrDefault(1);
+            string? arg1 = inputList.ElementAtOrDefault(2);
+
+            if (area == "clips")
+            {
+                ClipsArea.Handle(services.GetRequiredService<IClipService>(), verb, arg1);
+            }
+            else if (area == "exit")
+            {
+                return;
+            }
+            else
+            {
+                Console.WriteLine("Input not recognized!");
+            }
+        }
     }
 
     public static ServiceProvider ConfigureServices()
